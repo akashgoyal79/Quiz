@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salesforce Data 360 Consultant Practice Exam & Quiz Platform</title>
+  <link rel=stylesheet href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="logo-badge">360</div>
+        <div class="brand-text">
+          <h1>Salesforce Data 360 Consultant <span class="badge">Study & Exam Hub</span></h1>
+          <p>Official 111-Question Inventory & Trailhead Curriculum Companion</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <!-- Mode switcher -->
+        <div class="mode-switch">
+          <button class="mode-pill active" id="btnModePractice" onclick="setMode('practice')">Practice Mode</button>
+          <button class="mode-pill" id="btnModeExam" onclick="setMode('exam')">Exam Mode</button>
+        </div>
+
+        <!-- Timer widget -->
+        <div class="timer-widget" id="timerWidget">
+          <span class="timer-icon">⏱️</span>
+          <span class="timer-display" id="timerDisplay">105:00</span>
+          <button class="timer-btn" id="btnTimerToggle" title="Pause / Resume" onclick="toggleTimer()">⏸️</button>
+          <button class="timer-btn" title="Reset Timer" onclick="resetTimer()">🔄</button>
+        </div>
+
+        <!-- Shuffle Button -->
+        <button class="btn btn-secondary btn-sm" id="btnShuffle" title="Shuffle questions order" onclick="shuffleCurrentList()">
+          <span>🔀</span> Shuffle Questions
+        </button>
+
+        <!-- Theme toggle -->
+        <button class="btn-icon" id="btnTheme" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+          🌙
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <div class="main-wrapper">
+    
+    <!-- Question Main View -->
+    <main class="quiz-card">
+      <div class="overall-progress-bar">
+        <div class="progress-fill" id="overallProgressFill"></div>
+      </div>
+
+      <div class="card-topbar">
+        <div class="domain-tag" id="qDomainTag">
+          <span>🏷️</span> <span id="qDomainText">Solution Positioning</span>
+        </div>
+        <div class="card-meta-actions">
+          <span class="q-id-badge" id="qSourceId">Set1 Q49</span>
+          <button class="flag-btn" id="btnFlag" onclick="toggleFlagCurrent()">
+            <span>⭐</span> <span id="flagText">Flag for Review</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="question-body">
+        <div class="question-headline">
+          <span class="q-index-num" id="qDisplayIndex">Q 1</span>
+          <h2 class="question-text" id="qDisplayText">Question prompt loading...</h2>
+        </div>
+
+        <!-- Options Container -->
+        <div class="options-container" id="optionsContainer">
+          <!-- Dynamic options A, B, C, D will be inserted here -->
+        </div>
+
+        <!-- Explanation & Reference Box -->
+        <div class="explanation-box" id="explanationBox">
+          <div class="explanation-header">
+            <span>💡 <strong>Answer & Explanatory Context</strong></span>
+            <span class="badge-status badge-verified" id="badgeVerified">Keyed in Study Guide</span>
+          </div>
+          <p class="explanation-text" id="expText"></p>
+          <div class="explanation-meta" id="expMeta">
+            <div><strong>Source Validation:</strong> <span id="expValidation"></span></div>
+            <div id="trailheadRow">
+              <strong>Curriculum Resource:</strong> 
+              <a href="#" target="_blank" rel="noopener noreferrer" class="trailhead-link" id="expTrailhead">
+                Salesforce Trailhead Unit Reference ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Action Footer -->
+      <div class="card-footer">
+        <div class="footer-left-group">
+          <button class="btn btn-secondary" id="btnPrev" onclick="navigateQuestion(-1)">
+            ← Previous <span class="kbd-tag">←</span>
+          </button>
+          <button class="btn btn-primary" id="btnCheckAnswer" onclick="checkCurrentAnswer()">
+            Check Answer <span class="kbd-tag">Space</span>
+          </button>
+          <button class="btn btn-secondary" id="btnNext" onclick="navigateQuestion(1)">
+            Next → <span class="kbd-tag">→</span>
+          </button>
+        </div>
+
+        <div class="footer-right-group">
+          <button class="btn btn-secondary btn-sm" onclick="clearCurrentAnswer()">
+            Clear Choice
+          </button>
+          <button class="btn btn-primary btn-sm" id="btnSubmitExam" style="display:none;" onclick="finishExam()">
+            Finish Exam & Score
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Sidebar Navigator -->
+    <aside class="sidebar-panel">
+      
+      <!-- Palette Card -->
+      <div class="navigator-card">
+        <div class="nav-header-row">
+          <h3>Question Palette</h3>
+          <span class="nav-counter" id="paletteCounter">0 / 111 Answered</span>
+        </div>
+
+        <!-- Search Input -->
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search keywords..." oninput="onSearchInput()">
+        </div>
+
+        <!-- Domain Filter Dropdown -->
+        <div class="domain-select-box">
+          <select id="domainSelect" onchange="onDomainFilterChange()">
+            <option value="ALL">All Domains (111 Questions)</option>
+            <option value="Solution Positioning">Solution Positioning (17)</option>
+            <option value="Data 360 Setup and Administration">Setup & Administration (10)</option>
+            <option value="Data Source Connection and Ingestion">Connection & Ingestion (23)</option>
+            <option value="Harmonization and Unification">Harmonization & Unification (23)</option>
+            <option value="Data Enhancements, Sharing, and Analysis">Enhancements & Analysis (16)</option>
+            <option value="Data Activations and Utilization">Activations & Utilization (19)</option>
+            <option value="Unmatched / Needs Review">Unmatched / Review (3)</option>
+            <option value="SET1">Set 1 Questions (65)</option>
+            <option value="SET2">Set 2 Questions (46)</option>
+          </select>
+        </div>
+
+        <!-- Palette Filter Buttons -->
+        <div class="palette-filters">
+          <button class="p-filter-btn active" onclick="setPaletteFilter('all')">All</button>
+          <button class="p-filter-btn" onclick="setPaletteFilter('unanswered')">Unanswered</button>
+          <button class="p-filter-btn" onclick="setPaletteFilter('answered')">Answered</button>
+          <button class="p-filter-btn" onclick="setPaletteFilter('flagged')">Flagged ⭐</button>
+          <button class="p-filter-btn" id="filterBtnIncorrect" onclick="setPaletteFilter('incorrect')">Missed</button>
+        </div>
+
+        <!-- Grid of Question Pills -->
+        <div class="questions-grid" id="questionsGrid">
+          <!-- 111 grid items inserted dynamically -->
+        </div>
+
+        <!-- Legend -->
+        <div class="grid-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#0176D3; border-color:#0176D3;"></div> Current</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#D9E9FF; border-color:#A3C9FF;"></div> Answered</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--success-light); border-color:var(--success);"></div> Correct</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light); border-color:var(--danger);"></div> Incorrect</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--warning);"></div> Flagged (Dot)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--surface-secondary);"></div> Unanswered</div>
+        </div>
+
+        <!-- Quick Jump -->
+        <div class="jump-box">
+          <input type="number" id="jumpInput" min="1" max="111" placeholder="Go to Q#...">
+          <button class="btn btn-secondary btn-sm" onclick="jumpToQuestionNumber()">Go</button>
+        </div>
+      </div>
+
+      <!-- Quick Session Stats -->
+      <div class="stats-card">
+        <h4>Practice Summary</h4>
+        <div class="stats-row"><span>Total in View:</span> <strong id="statTotal">111</strong></div>
+        <div class="stats-row"><span>Attempted:</span> <strong id="statAttempted">0</strong></div>
+        <div class="stats-row" id="rowStatCorrect"><span>Correct:</span> <strong id="statCorrect" style="color:var(--success);">0</strong></div>
+        <div class="stats-row" id="rowStatIncorrect"><span>Incorrect:</span> <strong id="statIncorrect" style="color:var(--danger);">0</strong></div>
+        <div class="stats-row"><span>Flagged:</span> <strong id="statFlagged" style="color:var(--warning);">0</strong></div>
+        <div class="stats-row" id="rowStatAccuracy"><span>Accuracy:</span> <strong id="statAccuracy">0%</strong></div>
+        
+        <div style="margin-top: 12px; display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="resetQuizState()">Reset Quiz</button>
+          <button class="btn btn-outline-primary btn-sm" style="flex:1;" onclick="shuffleOptions()">Shuffle Options</button>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Exam Results Modal -->
+  <div class="modal-overlay" id="resultsModal">
+    <div class="modal-box">
+      <div class="score-badge-circle pass" id="modalScoreCircle">
+        <span class="score-percent" id="modalScorePercent">75%</span>
+        <span class="score-label" id="modalScoreLabel">PASSED</span>
+      </div>
+
+      <h2 class="results-title" id="modalTitle">Exam Complete!</h2>
+      <p class="results-subtitle" id="modalSubtitle">Salesforce Certified Data 360 Consultant Practice Assessment</p>
+
+      <div class="domain-breakdown-list" id="modalDomainBreakdown">
+        <!-- Dynamic Domain breakdown bars inserted here -->
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="reviewExam('all')">Review All Questions</button>
+        <button class="btn btn-danger" onclick="reviewExam('incorrect')">Review Incorrect Only</button>
+        <button class="btn btn-secondary" onclick="reviewExam('flagged')">Review Flagged Only</button>
+        <button class="btn btn-secondary" onclick="restartFreshExam()">Retake Exam (Shuffle)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMessage">Action completed</div>
+
+  <!-- Embedded Question Dataset & Application Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
